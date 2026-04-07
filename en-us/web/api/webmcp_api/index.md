@@ -56,30 +56,30 @@ The WebMCP API is only available in [secure contexts](/en-US/docs/Web/Security/S
 
 ## Interfaces
 
-- [ModelContext](../modelcontext/)
+- [ModelContext](../modelcontext/index.md)
   - : The primary interface for registering and unregistering tools. Accessed via `navigator.modelContext`.
-- [ModelContextClient](../modelcontextclient/)
+- [ModelContextClient](../modelcontextclient/index.md)
   - : Represents the AI agent that is executing a tool. Passed as the second argument to every {{domxref("ToolExecuteCallback")}} and provides `requestUserInteraction()` for collecting user input during execution.
 
 ## Dictionaries
 
-- [ModelContextTool](../modelcontexttool/)
+- [ModelContextTool](../modelcontexttool/index.md)
   - : Describes a tool to be registered: its `name`, `description`, optional `inputSchema`, `execute` callback, and optional `annotations`.
-- [ToolAnnotations](../toolannotations/)
+- [ToolAnnotations](../toolannotations/index.md)
   - : Optional metadata about a tool's behavior, including the `readOnlyHint` boolean.
 
 ## Callback functions
 
-- [ToolExecuteCallback](../toolexecutecallback/)
+- [ToolExecuteCallback](../toolexecutecallback/index.md)
   - : The signature of the function invoked when an agent calls a tool. Receives the agent-supplied `input` object and a `ModelContextClient`, and returns a {{jsxref("Promise")}} with the tool's result.
-- [UserInteractionCallback](../userinteractioncallback/)
+- [UserInteractionCallback](../userinteractioncallback/index.md)
   - : The signature of the function passed to `ModelContextClient.requestUserInteraction()`. Performs a user-facing interaction and returns a {{jsxref("Promise")}} resolving to its result.
 
 ## Extensions to other interfaces
 
 ### Navigator
 
-- [Navigator: modelContext property](../navigator/modelcontext/) {{ReadOnlyInline}}
+- [Navigator: modelContext property](../navigator/modelcontext/index.md) {{ReadOnlyInline}}
   - : Returns the `ModelContext` object for the current document.
 
 ## Examples
@@ -117,7 +117,8 @@ This example registers a tool that searches a product catalog. Because it does n
 ```js
 navigator.modelContext.registerTool({
   name: "searchProducts",
-  description: "Searches the product catalog for items matching the given query.",
+  description:
+    "Searches the product catalog for items matching the given query.",
   inputSchema: {
     type: "object",
     properties: {
@@ -129,7 +130,9 @@ navigator.modelContext.registerTool({
     required: ["query"],
   },
   execute: async ({ query }, client) => {
-    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
+    const response = await fetch(
+      `/api/products?q=${encodeURIComponent(query)}`,
+    );
     return response.json();
   },
   annotations: {
