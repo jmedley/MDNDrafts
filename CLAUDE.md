@@ -1,0 +1,1 @@
+This folder contains draft documents of web platform APIs. They're generated from Web IDL contained in web browser specs.

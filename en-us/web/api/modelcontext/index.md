@@ -22,28 +22,34 @@ the {{domxref("Navigator.modelContext")}} property.
 
 - {{domxref("ModelContext.registerTool()")}} {{Experimental_Inline}}
   - : Registers a single tool, described by a {{domxref("ModelContextTool")}} dictionary,
-    making it available for agents to invoke.
-- {{domxref("ModelContext.unregisterTool()")}} {{Experimental_Inline}}
-  - : Removes a previously registered tool by name.
+    making it available for agents to invoke. Pass an {{domxref("AbortSignal")}} in the
+    optional {{domxref("ModelContextRegisterToolOptions", "options")}} argument to
+    automatically unregister the tool when the signal is aborted.
 
 ## Examples
 
-### Registering and unregistering a tool
+### Registering a tool with automatic cleanup
+
+Use an `AbortController` to unregister the tool when it is no longer needed.
 
 ```js
+const controller = new AbortController();
 const ctx = navigator.modelContext;
 
-ctx.registerTool({
-  name: "getCurrentUrl",
-  description: "Returns the URL of the current page.",
-  execute: async (input, client) => {
-    return location.href;
+ctx.registerTool(
+  {
+    name: "getCurrentUrl",
+    description: "Returns the URL of the current page.",
+    execute: async (input, client) => {
+      return location.href;
+    },
+    annotations: { readOnlyHint: true },
   },
-  annotations: { readOnlyHint: true },
-});
+  { signal: controller.signal },
+);
 
 // Later, remove the tool when it is no longer needed.
-ctx.unregisterTool("getCurrentUrl");
+controller.abort();
 ```
 
 ## Specifications
@@ -58,5 +64,6 @@ ctx.unregisterTool("getCurrentUrl");
 
 - {{domxref("Navigator.modelContext")}}
 - {{domxref("ModelContextTool")}}
+- {{domxref("ModelContextRegisterToolOptions")}}
 - {{domxref("ModelContextClient")}}
 - [WebMCP API](/en-US/docs/Web/API/WebMCP_API)

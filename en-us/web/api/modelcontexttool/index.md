@@ -20,7 +20,12 @@ and optional behavioral annotations.
 - `name`
   - : A string providing a unique identifier for the tool within the current
     {{domxref("ModelContext")}}. Agents use this name to reference the tool when making
-    tool calls. Must not be an empty string.
+    tool calls. Must be between 1 and 128 characters and contain only ASCII alphanumeric
+    characters, underscores (`_`), hyphens (`-`), or periods (`.`).
+- `title` {{optional_inline}}
+  - : A string providing a human-readable display name for the tool. Unlike `name`, this
+    value is intended for display in native browser UIs and has no character restrictions.
+    If omitted, the tool has no display name.
 - `description`
   - : A string containing a natural-language description of the tool's functionality.
     This helps agents understand when and how to use the tool. Must not be an empty

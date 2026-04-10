@@ -26,17 +26,18 @@ A **browser's agent** is an AI agent provided by or through the browser — for 
 
 A page registers tools through the {{domxref("ModelContext")}} object exposed on {{domxref("Navigator.modelContext", "navigator.modelContext")}}. Each tool is described by a {{domxref("ModelContextTool")}} dictionary passed to {{domxref("ModelContext.registerTool()")}}:
 
-- `name` — a unique string identifier.
+- `name` — a unique string identifier. Must be between 1 and 128 characters and contain only ASCII alphanumeric characters, underscores (`_`), hyphens (`-`), or periods (`.`).
+- `title` _(optional)_ — a human-readable display name for the tool, intended for native browser UIs.
 - `description` — a natural-language explanation agents use to determine when to call the tool.
 - `inputSchema` _(optional)_ — a JSON Schema object describing the parameters the agent should supply.
 - `execute` — a {{domxref("ToolExecuteCallback")}} function that runs when an agent invokes the tool.
 - `annotations` _(optional)_ — a {{domxref("ToolAnnotations")}} dictionary with behavioral hints.
 
-Registering a tool with a name that is already in use, or with an empty `name` or `description`, throws an `InvalidStateError`.
+Registering a tool throws an `InvalidStateError` if a tool with the same name is already registered, if `name` or `description` is empty, if `name` exceeds 128 characters or contains disallowed characters, or if the `inputSchema` cannot be serialized to JSON (which throws a `TypeError`).
 
 ### Tool execution
 
-When an agent calls a registered tool, the browser invokes the tool's `execute` callback with two arguments: an `input` object (shaped according to `inputSchema`, or an empty object if none was provided) and a {{domxref("ModelContextClient")}} instance representing the agent. The callback may return a {{jsxref("Promise")}}, in which case the agent receives the resolved value once the promise settles.
+When an agent calls a registered tool, the browser invokes the tool's `execute` callback with two arguments: an `input` object (shaped according to `inputSchema`, or an empty object if none was provided) and a {{domxref("ModelContextClient")}} instance representing the agent. The callback returns a {{jsxref("Promise")}} that resolves to the tool's result, which is then returned to the agent.
 
 ### User interaction during tool execution
 
@@ -48,11 +49,11 @@ The optional {{domxref("ToolAnnotations")}} dictionary lets a tool signal metada
 
 ### Lifecycle and cleanup
 
-A tool can be removed at any time by calling {{domxref("ModelContext.unregisterTool()")}} with the tool's name. Alternatively, an {{domxref("AbortSignal")}} can be supplied in the {{domxref("ModelContextRegisterToolOptions", "options")}} argument to `registerTool()`; the tool is automatically unregistered when the signal is aborted.
+A tool is removed by supplying an {{domxref("AbortSignal")}} in the {{domxref("ModelContextRegisterToolOptions", "options")}} argument to `registerTool()`; the tool is automatically unregistered when the signal is aborted.
 
 ### Security
 
-The WebMCP API is only available in [secure contexts](/en-US/docs/Web/Security/Secure_Contexts) (HTTPS). Tool names and descriptions must be non-empty strings, and any `inputSchema` must be a valid JSON Schema object.
+The WebMCP API is only available in [secure contexts](/en-US/docs/Web/Security/Secure_Contexts) (HTTPS). Tool names must be non-empty, at most 128 characters, and consist only of ASCII alphanumeric characters, underscores, hyphens, or periods. Descriptions must be non-empty strings. Any `inputSchema` must be serializable to JSON or `registerTool()` will throw a `TypeError`.
 
 ## Interfaces
 
@@ -64,9 +65,11 @@ The WebMCP API is only available in [secure contexts](/en-US/docs/Web/Security/S
 ## Dictionaries
 
 - [ModelContextTool](../modelcontexttool/index.md)
-  - : Describes a tool to be registered: its `name`, `description`, optional `inputSchema`, `execute` callback, and optional `annotations`.
+  - : Describes a tool to be registered: its `name`, optional `title`, `description`, optional `inputSchema`, `execute` callback, and optional `annotations`.
 - [ToolAnnotations](../toolannotations/index.md)
   - : Optional metadata about a tool's behavior, including the `readOnlyHint` boolean.
+- [ModelContextRegisterToolOptions](../modelcontextregistertoololptions/index.md)
+  - : Options for {{domxref("ModelContext.registerTool()")}}, including an optional `signal` ({{domxref("AbortSignal")}}) that automatically unregisters the tool when aborted.
 
 ## Callback functions
 
